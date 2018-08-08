@@ -1,20 +1,23 @@
-import { isFunction } from '@viewjs/utils';
+import { isFunction, Constructor } from '@viewjs/utils';
 import { IView } from '@viewjs/view';
-import { ComponentType, PropType, IComponentRenderer, IComponentView } from './types';
+import { ComponentType, PropType, IComponentRenderer, IComponentView, ConditionType, ComponentContainerOptions } from './types';
 import { ComponentContainer } from './component-container';
 
-export interface ComponentOptions {
-    component?: ComponentType<any> | (() => Promise<ComponentType<any>>);
-    attributes?: PropType | ((view: IView) => PropType)
+export interface ComponentOptions<P extends PropType> {
+    component?: ComponentType<P> | (() => Promise<ComponentType<P>> | P);
+    attributes?: P | ((view: IView) => P);
+    children?: JSX.Element[];
+    name?: string;
     async?: boolean;
+    condition?: ConditionType;
+    preserveAttributeOnUnmount?: boolean;
 }
 
 export const ComponentsKey = Symbol('view@components');
 
-export function component(selector: string, options: ComponentOptions = {}) {
+export function component<P extends PropType>(selector: string, options: ComponentOptions<P> = {}) {
     return function <T extends IComponentView>(target: T, prop: string) {
-
-        let Component: ComponentType<any> | undefined | (() => Promise<ComponentType<any>>);
+        let Component: ComponentType<P> | undefined | (() => Promise<ComponentType<P>> | P);
         if (isFunction(options.component)) {
             Component = options.component;
         } else {
@@ -33,8 +36,10 @@ export function component(selector: string, options: ComponentOptions = {}) {
             selector: selector,
             component: Component,
             attributes: options.attributes || {},
-            name: prop,
+            name: options.name || prop,
             async: !!options.async,
+            condition: options.condition,
+            preserveAttributeOnUnmount: options!.preserveAttributeOnUnmount
         });
 
         return {
@@ -47,20 +52,42 @@ export function component(selector: string, options: ComponentOptions = {}) {
     }
 }
 
+export type ComponentsOptions<P extends PropType> = {
+    [key: string]: {
+        component: ComponentType<P> | (() => Promise<ComponentType<P>> | P);
+        attributes?: P | ((view: IView) => P);
+        children?: JSX.Element[];
+        selector: string;
+        name?: string;
+        async?: boolean;
+        condition?: ConditionType;
+        preserveAttributeOnUnmount?: boolean;
+    };
+};
+
+export function components<P extends PropType>(options: ComponentsOptions<P>) {
+    return function <T extends IComponentView>(target: Constructor<T>) {
+
+        let meta = Reflect.getOwnMetadata(ComponentsKey, target.prototype);
+        if (!meta) {
+            meta = [];
+            Reflect.defineMetadata(ComponentsKey, meta, target.prototype);
+        }
+
+        for (let k in options) {
+            var v = options[k];
+            meta.push(Object.assign({ name: k }, v));
+        }
+
+    }
+}
+
 
 export function componentFromMeta(renderer: IComponentRenderer, view: IView): ComponentContainer<IView, any>[] {
 
     let out = Reflect.getMetadata(ComponentsKey, view);
     if (!out) return [];
 
-    return out.map((m: any) => {
-        return new ComponentContainer(renderer, view, {
-            selector: m.selector,
-            componentType: m.component,
-            attributes: m.attributes,
-            name: m.name,
-            async: m.async
-        });
-    });
+    return out.map((m: ComponentContainerOptions<any>) => new ComponentContainer<IView, any>(renderer, view, m));
 
 }

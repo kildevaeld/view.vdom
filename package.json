@@ -16,6 +16,7 @@
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^5.2.4",
     "@types/sinon": "^5.0.1",
+    "@viewjs/events": "^1.2.1",
     "babel-loader": "^8.0.0-beta.4",
     "expect.js": "^0.3.1",
     "gulp": "^4.0.0",
@@ -25,7 +26,6 @@
     "jquery": "^3.3.1",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
-    "preact": "^8.3.0",
     "reflect-metadata": "^0.1.12",
     "require-dir": "^1.0.0",
     "rollup": "^0.62.0",
@@ -41,8 +41,9 @@
     "webpack-cli": "^3.0.8"
   },
   "dependencies": {
-    "@viewjs/utils": "^1.6.0",
-    "@viewjs/view": "^2.7.3"
+    "@viewjs/utils": "^1.8.0",
+    "@viewjs/view": "^2.7.3",
+    "preact": "^8.3.0"
   },
   "types": "./lib/index.d.ts",
   "license": "MIT",

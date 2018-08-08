@@ -20,7 +20,7 @@ export function withComponents<
 
             componentFromMeta(result<IComponentRenderer>(this, '_renderer')!, this)
                 .forEach(found => {
-                    if (this.components.find(m => m.name === found!.name))
+                    if (this.findComponent(found!.name))
                         throw new TypeError(`a component with name '${found!.name}' already registered`);
                     this.components.push(found);
                 });
@@ -50,24 +50,19 @@ export function withComponents<
             name?: string,
             children: JSX.Element[] = []): any {
 
-            let found = this.components.find(m => m.selector === selector && m.componentType === Component);
+            let renderer = result<R>(this, "_renderer")
+            const found = new ComponentContainer(renderer!, this, {
+                selector: selector,
+                attributes: props,
+                component: Component,
+                children: children,
+                name: name || (isString(selector) ? selector : uniqueId())
+            });
 
-            if (!found) {
-                let renderer = result<R>(this, "_renderer")
-                found = new ComponentContainer(renderer!, this, {
-                    selector: selector,
-                    attributes: props,
-                    componentType: Component,
-                    children: children,
-                    name: name || (isString(selector) ? selector : uniqueId())
-                });
+            if (this.components.find(m => m.name === found!.name))
+                throw new TypeError(`a component with name '${found!.name}' already registered`);
 
-                if (this.components.find(m => m.name === found!.name))
-                    throw new TypeError(`a component with name '${found!.name}' already registered`);
-
-                this.components.push(found!);
-            }
-
+            this.components.push(found!);
             if (this._componentsRendered)
                 found!.render();
 

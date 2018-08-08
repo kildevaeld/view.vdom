@@ -1,6 +1,8 @@
-import { IComponentRenderer, ComponentType, UnmountOptions } from '../';
+import { IComponentRenderer, ComponentType, UnmountOptions, IComponentView } from './types';
 import { render, h } from 'preact';
-
+import { withComponents } from './with-components';
+import { View, BaseViewOptions } from '@viewjs/view';
+import { Constructor } from '@viewjs/utils';
 
 function removeNode(node: Node) {
     var parentNode = node.parentNode;
@@ -31,7 +33,6 @@ function recollectNodeTree(node: any, unmountOnly: boolean) {
 }
 
 function unmountComponent(component: any) {
-    //if (options.beforeUnmount) options.beforeUnmount(component);
 
     var base = component.base;
 
@@ -56,6 +57,7 @@ function unmountComponent(component: any) {
     if (component.__ref) component.__ref(null);
 }
 
+var _instance: PreactRenderer | undefined;
 
 export class PreactRenderer implements IComponentRenderer {
 
@@ -72,4 +74,12 @@ export class PreactRenderer implements IComponentRenderer {
         return true;
     }
 
+    static get shared() {
+        if (!_instance) {
+            _instance = new PreactRenderer();
+        }
+        return _instance;
+    }
 }
+
+export class PreactView extends withComponents<Constructor<View<HTMLElement, BaseViewOptions<HTMLElement>>>, PreactRenderer>(View, () => PreactRenderer.shared) implements IComponentView { }

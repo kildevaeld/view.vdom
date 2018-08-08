@@ -1,30 +1,53 @@
-import { View, event } from '@viewjs/view';
-import { withComponents, component } from '../';
+import { event } from '@viewjs/view';
+import { PreactView, component, components } from '../';
 import { Test } from './component';
-import { PreactRenderer } from './preact-renderer';
+import { Observer } from '@viewjs/events';
+
+function should() {
+    const o = new Observer<boolean>();
+    o.next(false);
+    var count = 0;
+    const i = setInterval(() => {
+        count++;
+        if (count % 5 == 0) {
+            o.next(false);
+        } else {
+            o.next(true)
+            if (count > 100) {
+                o.complete();
+                clearInterval(i);
+            }
+
+        }
+    }, 1000);
+    o.next(true)
+    return o.subscriber();
+}
 
 
-
-
-function delay() {
+export function delay() {
     return new Promise((res, _rej) => {
         setTimeout(() => {
             res()
-        }, 5000);
+        }, 1000);
     })
 }
 
-export class Page extends withComponents(View, () => new PreactRenderer) {
+@components({
+    test2: {
+        component: Test,
+        selector: '.preact2'
+    }
+})
+class Page extends PreactView {
 
     count = 0;
-    // constructor(options: BaseViewOptions<HTMLElement>) {
-    //     super(options);
-    //     //this.renderComponent(Test, '.preact', { who: 'world' }, 'test');
-    // }
 
     @component('.preact', {
         async: true,
-        component: () => delay().then(() => Test)
+        component: () => delay().then(() => Test),
+        condition: should,
+        preserveAttributeOnUnmount: true
     })
     test!: Test;
 
@@ -40,6 +63,7 @@ export class Page extends withComponents(View, () => new PreactRenderer) {
 
         if (this.count % 5 == 0) {
             this.findComponent('test')!.unmount();
+
         }
         //.getInstance<Test>()!.explode();
     }

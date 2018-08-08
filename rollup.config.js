@@ -16,12 +16,13 @@ module.exports = [
             globals: {
                 '@viewjs/utils': 'viewjs.utils',
                 '@viewjs/view': 'viewjs.view',
+                'preact': 'preact',
             }
         }, {
             file: pkg.module,
             format: 'es',
         }],
-        external: ["@viewjs/utils", "@viewjs/view"],
+        external: ["@viewjs/utils", "@viewjs/view", "preact"],
         plugins: [
             typescript({
                 exclude: ['node_modules/**'],
