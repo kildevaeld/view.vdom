@@ -21,7 +21,7 @@ gulp.task('typescript', () => {
     const project = tsc.createProject('./tsconfig.json', {
         declaration: true
     })
-    const out = gulp.src('./src/**/*.ts')
+    return gulp.src('./src/**/*.ts')
         .pipe(project())
         .pipe(gulp.dest('lib'));
 });
