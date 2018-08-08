@@ -12,7 +12,7 @@ module.exports = [
         output: [{
             file: pkg.browser,
             format: 'umd',
-            name: 'viewjs.vsdom',
+            name: 'viewjs.vdom',
             globals: {
                 '@viewjs/utils': 'viewjs.utils',
                 '@viewjs/view': 'viewjs.view',
