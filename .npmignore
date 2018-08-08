@@ -1,0 +1,8 @@
+.DS_Store
+src/
+lib/example
+.babelrc
+gulpfile.js
+rollup.config.js
+tsconfig.json
+webpack.config.js

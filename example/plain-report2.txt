@@ -1,0 +1,4 @@
+@viewjs/view: 23.01 KB (28.9%)
+preact: 18.48 KB (23.2%)
+@viewjs/utils: 15.54 KB (19.5%)
+<self>: 22.72 KB (28.5%)
