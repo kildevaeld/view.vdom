@@ -9,7 +9,8 @@
   "sideEffects": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node_modules/.bin/gulp default"
+    "build": "./node_modules/.bin/gulp default",
+    "prepare": "./node_modules/.bin/gulp default"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.56",
