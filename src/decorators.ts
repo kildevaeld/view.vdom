@@ -13,7 +13,7 @@ export interface ComponentOptions<P extends PropType> {
     preserveAttributeOnUnmount?: boolean;
 }
 
-export const ComponentsKey = Symbol('view@components');
+const ComponentsKey = Symbol('view@components');
 
 export function component<P extends PropType>(selector: string, options: ComponentOptions<P> = {}) {
     return function <T extends IComponentView>(target: T, prop: string) {
